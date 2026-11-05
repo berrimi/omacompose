@@ -104,7 +104,10 @@ local function layout_keys()
   for raw in symbols:gmatch("key%s+<[^>]+>%s*(%b{})") do
     -- With several layouts, groups are written `symbols[1]= [ … ]`: drop the
     -- `symbols[1]` (and `actions[1]`, `type[1]`) labels, or `1` reads as a key.
-    local body = raw:gsub("[%a_]+%[[^%]]*%]", "")
+    -- Explicit `actions[1]= [ LockMods(…), … ]` arrays (e.g. Caps under
+    -- omarchy:shift_caps_compose) hold actions, not keysyms: drop them whole.
+    local body = raw:gsub("actions[^=]*=%s*%b[]", "")
+    body = body:gsub("[%a_]+%[[^%]]*%]", "")
     for group in body:gmatch("%[([^%]]*)%]") do
       local levels = {}
       for sym in group:gmatch("[^,%s]+") do levels[#levels + 1] = sym end

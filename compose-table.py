@@ -243,6 +243,9 @@ def keymap_keysyms(keymap):
     symbols = keymap.split("xkb_symbols", 1)[-1]
     syms = set()
     for block in re.findall(r"key\s+<[^>]+>\s*\{(.*?)\};", symbols, re.S):
+        # Explicit `actions[1]= [ LockMods(…), … ]` arrays (e.g. Caps under
+        # omarchy:shift_caps_compose) hold actions, not keysyms: drop them whole.
+        block = re.sub(r"actions[^=]*=\s*\[[^\]]*\]", "", block)
         # Several layouts are written `symbols[1]= [ … ]`; drop those labels.
         block = re.sub(r"\w+\[[^\]]*\]", "", block)
         for group in re.findall(r"\[([^\]]*)\]", block):

@@ -171,6 +171,19 @@ xkb_symbols "pc+us+de:2" {
         self.assertEqual(ct.keymap_keysyms(keymap), {
             "1", "exclam", "onesuperior", "exclamdown", "q", "Q", "at", "Greek_OMEGA", "space"})
 
+    def test_explicit_actions_are_not_keysyms(self):
+        keymap = """
+xkb_symbols "pc_us_inet(evdev)_omarchy(shift_caps_compose)" {
+	key <CAPS>               {
+		type= "TWO_LEVEL",
+		repeat= No,
+		symbols[1]= [                      Caps_Lock,                      Multi_key ],
+		actions[1]= [       LockMods(modifiers=Lock),                     NoAction() ]
+	};
+};
+"""
+        self.assertEqual(ct.keymap_keysyms(keymap), {"Caps_Lock", "Multi_key"})
+
     def test_single_layout_has_no_group_labels(self):
         keymap = 'xkb_symbols "pc+us" {\n key <AE02> { [ 2, at ] };\n};\n'
         self.assertEqual(ct.keymap_keysyms(keymap), {"2", "at"})
